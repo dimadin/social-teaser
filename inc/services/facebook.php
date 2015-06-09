@@ -32,18 +32,18 @@ class Social_Teaser_Service_Facebook extends Social_Teaser_Service {
 	 * @return string $request Response from service.
 	 */
 	public static function publish( Keyring_Token $token, Keyring_Service $keyring_service, array $args ) {
-		$status    = '';
-		$shortlink = '';
+		$message   = '';
+		$permalink = '';
 
 		if ( isset( $args['post_id'] ) && $args['post_id'] ) {
 			$title     = get_the_title( $args['post_id'] );
-			$shortlink = get_permalink( $args['post_id'] );
+			$permalink = get_permalink( $args['post_id'] );
 
-			$status = $title;
+			$message = $title;
 		}
 
 		// Prepare actual body of request
-		$body = array( 'message' => $status, 'link' => $shortlink );
+		$body = array( 'message' => $message, 'link' => $permalink );
 
 		/**
 		 * Filter Facebook request's body.
