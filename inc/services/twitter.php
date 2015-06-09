@@ -32,24 +32,33 @@ class Social_Teaser_Service_Twitter extends Social_Teaser_Service {
 	 * @return string $request Response from service.
 	 */
 	public static function publish( Keyring_Token $token, Keyring_Service $keyring_service, array $args ) {
+		$status = '';
+
 		if ( isset( $args['post_id'] ) && $args['post_id'] ) {
 			$title     = get_the_title( $args['post_id'] );
 			$shortlink = wp_get_shortlink( $args['post_id'] );
 
 			// TODO: sprintify string
 			$status = $title . ' ' . $shortlink;
-		} else {
-			$status = '';
 		}
 
-		$status = apply_filters( 'social_teaser_service_twitter_content', $status, $args );
+		// Prepare actual body of request
+		$body = array( 'status' => $status );
+
+		/**
+		 * Filter Twitter request's body.
+		 *
+		 * @param array $body Data passed used in Twitter request.
+		 * @param array $args An array with data related to publishing.
+		 */
+		$body = (array) apply_filters( 'social_teaser_service_twitter_body', $body, $args );
 
 		$request = $keyring_service->request(
 			'https://api.twitter.com/1.1/statuses/update.json',
 			array(
 				'method'  => 'POST',
 				'timeout' => 100,
-				'body'    => array( 'status' => $status )
+				'body'    => $body,
 			)
 		);
 
