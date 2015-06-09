@@ -34,7 +34,7 @@ class Social_Teaser_Service_Facebook extends Social_Teaser_Service {
 	public static function publish( Keyring_Token $token, Keyring_Service $keyring_service, array $args ) {
 		if ( isset( $args['post_id'] ) && $args['post_id'] ) {
 			$title     = get_the_title( $args['post_id'] );
-			$shortlink = wp_get_shortlink( $args['post_id'] );
+			$shortlink = get_permalink( $args['post_id'] );
 
 			$status = $title;
 		} else {
