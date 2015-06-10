@@ -22,6 +22,16 @@ class Social_Teaser_Service_Facebook extends Social_Teaser_Service {
 	const NAME  = 'facebook';
 
 	/**
+	 * Add main method to appropriate hook.
+	 *
+	 * @access public
+	 */
+	public function __construct() {
+		// Force Facebook to allow posting
+		add_filter( 'keyring_facebook_request_token_params', array( $this, 'force_permissions' ) );
+	}
+
+	/**
 	 * Publish to Facebook using data provided.
 	 *
 	 * @access public
@@ -63,6 +73,20 @@ class Social_Teaser_Service_Facebook extends Social_Teaser_Service {
 		);
 
 		return $request;
+	}
+
+	/**
+	 * Request publishing permission from Facebook.
+	 *
+	 * @access public
+	 *
+	 * @param array $params Array of query params used in request.
+	 * @return array $params Modified array of query params used in request.
+	 */
+	public function force_permissions( $params ) {
+		$params['scope'] = 'publish_actions';
+
+		return $params;
 	}
 }
 
