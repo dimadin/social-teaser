@@ -28,7 +28,7 @@ class Social_Teaser_Service_Facebook extends Social_Teaser_Service {
 	 */
 	public function __construct() {
 		// Force Facebook to allow posting
-		add_filter( 'keyring_facebook_request_token_params', array( $this, 'force_permissions' ) );
+		add_filter( 'keyring_facebook_scope', array( $this, 'force_scopes' ) );
 	}
 
 	/**
@@ -80,13 +80,13 @@ class Social_Teaser_Service_Facebook extends Social_Teaser_Service {
 	 *
 	 * @access public
 	 *
-	 * @param array $params Array of query params used in request.
-	 * @return array $params Modified array of query params used in request.
+	 * @param array $scopes An array of scopes used in request.
+	 * @return array $scopes Modified array of scopes used in request.
 	 */
-	public function force_permissions( $params ) {
-		$params['scope'] = 'publish_actions';
+	public function force_scopes( $scopes ) {
+		$scopes[] = 'publish_actions';
 
-		return $params;
+		return $scopes;
 	}
 }
 
