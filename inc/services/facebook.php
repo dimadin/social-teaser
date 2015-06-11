@@ -36,10 +36,10 @@ class Social_Teaser_Service_Facebook extends Social_Teaser_Service {
 	 *
 	 * @access public
 	 *
-	 * @param Keyring_Token         $token    Token of service that should be publishe to.
-	 * @param Social_Teaser_Service $instance Object of Social_Teaser_Service child class.
-	 * @param array                 $args     An array with data related to publishing.
-	 * @return string $request Response from service.
+	 * @param Keyring_Token   $token           Token of service that should be published to.
+	 * @param Keyring_Service $keyring_service Object of Keyring_Service child class.
+	 * @param array           $args            An array with data related to publishing.
+	 * @return string|Keyring_Error $request Response from service, error on failure.
 	 */
 	public static function publish( Keyring_Token $token, Keyring_Service $keyring_service, array $args ) {
 		$message   = '';
@@ -52,24 +52,58 @@ class Social_Teaser_Service_Facebook extends Social_Teaser_Service {
 			$message = $title;
 		}
 
+		// Prepare URL of request
+		$url = 'https://graph.facebook.com/me/feed';
+
+		/**
+		 * Filter Facebook request's API endpoint.
+		 *
+		 * @param string          $url             API endpoint used in Facebook request.
+		 * @param array           $args            An array with data related to publishing.
+		 * @param Keyring_Token   $token           Token of service that should be published to.
+		 * @param Keyring_Service $keyring_service Object of Keyring_Service child class.
+		 */
+		$url = (string) apply_filters( 'social_teaser_service_facebook_url', $url, $args, $token, $keyring_service );
+
 		// Prepare actual body of request
 		$body = array( 'message' => $message, 'link' => $permalink );
 
 		/**
 		 * Filter Facebook request's body.
 		 *
-		 * @param array $body Data passed used in Facebook request.
-		 * @param array $args An array with data related to publishing.
+		 * @param array           $body            Data used in Facebook request.
+		 * @param array           $args            An array with data related to publishing.
+		 * @param Keyring_Token   $token           Token of service that should be published to.
+		 * @param Keyring_Service $keyring_service Object of Keyring_Service child class.
 		 */
-		$body = (array) apply_filters( 'social_teaser_service_facebook_body', $body, $args );
+		$body = (array) apply_filters( 'social_teaser_service_facebook_body', $body, $args, $token, $keyring_service );
 
+		// Prepare actual requests parameters
+		$request_params = array(
+			'method'  => 'POST',
+			'timeout' => 100,
+			'body'    => $body,
+		);
+
+		/**
+		 * Filter Facebook request's parameters.
+		 *
+		 * @param array           $request_params  Request parameters used in Facebook request.
+		 * @param array           $args            An array with data related to publishing.
+		 * @param Keyring_Token   $token           Token of service that should be published to.
+		 * @param Keyring_Service $keyring_service Object of Keyring_Service child class.
+		 */
+		$request_params = (array) apply_filters( 'social_teaser_service_facebook_request_params', $request_params, $args, $token, $keyring_service );
+
+		// Check that URL is not empty
+		if ( ! $url ) {
+			return new Keyring_Error( 'social-teaser-empty-url', __( 'URL is empty.', 'social-teaser' ) );
+		}
+
+		// Make request
 		$request = $keyring_service->request(
-			'https://graph.facebook.com/me/feed',
-			array(
-				'method'  => 'POST',
-				'timeout' => 100,
-				'body'    => $body,
-			)
+			$url,
+			$request_params
 		);
 
 		return $request;
