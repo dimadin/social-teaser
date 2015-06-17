@@ -104,12 +104,7 @@ abstract class Social_Teaser_Service {
 		if ( $keyring_service && $keyring_service->get_token() ) {
 			$request = $social_teaser_service_class::publish( $token, $keyring_service, $args );
 
-			// If there was error return false
-			if ( Keyring_Util::is_error( $request ) ) {
-				return false;
-			} else {
-				return $request;
-			}
+			return $request;
 		}
 
 		return false;
