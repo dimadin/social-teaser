@@ -45,6 +45,15 @@ class Social_Teaser {
 	protected $registered_services = array();
 
 	/**
+	 * Post types that allow teasing.
+	 *
+	 * @access public
+	 *
+	 * @var array
+	 */
+	public $post_types = array();
+
+	/**
 	 * Set class properties and add main methods to appropriate hooks.
 	 *
 	 * @access public
@@ -52,6 +61,9 @@ class Social_Teaser {
 	public function __construct() {
 		// Set path
 		$this->path = rtrim( plugin_dir_path( __FILE__ ), '/' );
+
+		// Register post types
+		add_action( 'wp_loaded',       array( $this, 'wp_loaded'           )        );
 
 		// Register meta boxes
 		add_filter( 'rwmb_meta_boxes', array( $this, 'register_meta_boxes' )        );
@@ -203,6 +215,23 @@ class Social_Teaser {
 	}
 
 	/**
+	 * Set post types allowed for teasing.
+	 *
+	 * @access public
+	 */
+	public function wp_loaded() {
+		/**
+		 * Filter post types that are allowed to be teased.
+		 *
+		 * @param array $post_types Post types allowed to be teased. Default 'post'.
+		 */
+		$post_types = (array) apply_filters( 'social_teaser_post_types', array( 'post' ) );
+
+		// Set post types allowed for teasing
+		$this->post_types = $post_types;
+	}
+
+	/**
 	 * Publish to all selected accounts when post is transitioned.
 	 *
 	 * @param int     $post_ID Post ID.
@@ -317,7 +346,7 @@ class Social_Teaser {
 			// Meta box title
 			'title' => __( 'Social Teaser', 'social-teaser' ),
 			// Post types that this appears on
-			'post_types' => array( 'post', 'page' ),
+			'post_types' => $this->post_types,
 			// Where the meta box appear
 			'context' => 'normal',
 			// Order of meta box
