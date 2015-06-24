@@ -132,7 +132,7 @@ class Social_Teaser_Service_Tumblr extends Social_Teaser_Service {
 
 		foreach ( $blogs as $blog ) {
 			$full_url = $blog->url;
-			$base_urls[] = parse_url( $full_url,  PHP_URL_HOST );
+			$base_urls[] = parse_url( $full_url, PHP_URL_HOST );
 		}
 
 		return (array) apply_filters( 'social_teaser_service_tumblr_get_blogs', $base_urls );
