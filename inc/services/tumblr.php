@@ -47,7 +47,7 @@ class Social_Teaser_Service_Tumblr extends Social_Teaser_Service {
 		$url = $blogs ? 'https://api.tumblr.com/v2/blog/' . $blogs[0] . '/post' : '';
 
 		// Include base URL in $args
-		$args['tumblr_base_url'] = $url;
+		$args['tumblr_base_url'] = $blogs[0];
 
 		/**
 		 * Filter Tumblr request's API endpoint.
