@@ -275,20 +275,23 @@ class Social_Teaser {
 					// Extract post ID from meta key
 					$token_id = str_replace( $base_key, '', $meta_key );
 
-					// Get token from ID
-					$token_args = array(
-						'id'      => absint( $token_id ),
-						'service' => $name,
-					);
-					$token = Keyring::get_token_store()->get_token( $token_args );
+					// Check if it has value for teasing
+					if ( get_post_meta( $post_ID, $base_key . $token_id, true ) ) {
+						// Get token from ID
+						$token_args = array(
+							'id'      => absint( $token_id ),
+							'service' => $name,
+						);
+						$token = Keyring::get_token_store()->get_token( $token_args );
 
-					// If there is a token, publish to it
-					if ( $token ) {
-						$args = array( 'post_id' => $_post->ID );
-						$response = $social_teaser_service_class::publish_to_token( $token, $args );
+						// If there is a token, publish to it
+						if ( $token ) {
+							$args = array( 'post_id' => $_post->ID );
+							$response = $social_teaser_service_class::publish_to_token( $token, $args );
 
-						// Save response to meta
-						add_post_meta( $_post->ID, $meta_key . '_response', $response );
+							// Save response to meta
+							add_post_meta( $_post->ID, $meta_key . '_response', $response );
+						}
 					}
 				}
 			}
